@@ -1,11 +1,10 @@
 "use client"
 
-import { useMemo, useState } from "react"
+import { useMemo, useState, useEffect } from "react"
 import { Search } from "lucide-react"
 import {
   blocks,
   categories,
-  products,
   type BlockId,
 } from "@/lib/marketplace-data"
 import { Logo } from "./logo"
@@ -18,7 +17,18 @@ export function Marketplace() {
   const [activeBlock, setActiveBlock] = useState<BlockId>("web3")
   const [activeCategory, setActiveCategory] = useState<string | null>(null)
   const [activeTab, setActiveTab] = useState("home")
+// Создаем динамическое состояние для товаров вместо статического
+  const [products, setProducts] = useState<any[]>([]);
 
+  useEffect(() => {
+    // Делаем запрос к твоему живому серверу на Render
+    fetch("https://gamerdrop-backend.onrender.com/products")
+      .then((res) => res.json())
+      .then((data) => {
+        setProducts(data);
+      })
+      .catch((err) => console.error("Ошибка загрузки товаров с Render:", err));
+  }, []);
   const counts = useMemo(() => {
     const map: Record<string, number> = {}
     for (const p of products) {
